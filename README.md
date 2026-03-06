@@ -9,7 +9,7 @@ Operational tooling for running [OpenClaw](https://github.com/openclaw/openclaw)
 | Tool | Description | Status |
 |------|-------------|--------|
 | `aat health` | Check gateway, Telegram, RAM, storage, battery, temperature | ✅ |
-| `aat watchdog` | Auto-restart gateway on crash, alert on failures | 🚧 |
+| `aat watchdog` | Auto-restart gateway on crash, alert on failures | ✅ |
 | `aat backup` | One-command workspace + config backup/restore | 🚧 |
 | `aat bench` | Device compatibility benchmarker | 🚧 |
 
@@ -42,6 +42,32 @@ echo 'export PATH="$HOME/dev/android-agent-toolkit:$PATH"' >> ~/.bashrc
 ./aat health --brief
 ```
 
+## Watchdog
+
+The watchdog monitors the gateway and auto-restarts it on failure:
+
+```bash
+# One-shot check (good for cron)
+./aat watchdog --once
+
+# Continuous monitoring (foreground)
+./aat watchdog --interval 60
+
+# Background with nohup
+nohup ./aat watchdog --quiet &
+
+# Dry run (check only, no restart)
+./aat watchdog --once --dry-run
+```
+
+Features:
+- Process + RPC health checking
+- Exponential backoff on repeated failures (10s → 300s)
+- Restart rate limiting (max 5/hour by default, configurable)
+- Pidfile to prevent duplicate watchdogs
+- Logs to `/data/data/com.termux/files/usr/tmp/aat-watchdog.log`
+- Termux notifications on restart events
+
 ## Cron Integration
 
 Add to your Termux crontab for automated monitoring:
@@ -49,6 +75,9 @@ Add to your Termux crontab for automated monitoring:
 ```bash
 # Check health every 15 minutes, alert via Termux notification on problems
 */15 * * * * ~/dev/android-agent-toolkit/aat health --json | ~/dev/android-agent-toolkit/scripts/alert-on-problem.sh
+
+# Watchdog one-shot every 5 minutes (restart gateway if down)
+*/5 * * * * ~/dev/android-agent-toolkit/aat watchdog --once --quiet
 ```
 
 ## Project

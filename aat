@@ -34,8 +34,8 @@ case "${1:-}" in
     exec bash "$AAT_DIR/commands/health.sh" "$@"
     ;;
   watchdog)
-    echo "Error: watchdog not yet implemented" >&2
-    exit 1
+    shift
+    exec bash "$AAT_DIR/commands/watchdog.sh" "$@"
     ;;
   backup)
     echo "Error: backup not yet implemented" >&2
