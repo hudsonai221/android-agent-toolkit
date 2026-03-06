@@ -10,7 +10,7 @@ Operational tooling for running [OpenClaw](https://github.com/openclaw/openclaw)
 |------|-------------|--------|
 | `aat health` | Check gateway, Telegram, RAM, storage, battery, temperature | ✅ |
 | `aat watchdog` | Auto-restart gateway on crash, alert on failures | ✅ |
-| `aat backup` | One-command workspace + config backup/restore | 🚧 |
+| `aat backup` | One-command workspace + config backup | ✅ |
 | `aat bench` | Device compatibility benchmarker | 🚧 |
 
 ## Requirements
@@ -67,6 +67,39 @@ Features:
 - Pidfile to prevent duplicate watchdogs
 - Logs to `/data/data/com.termux/files/usr/tmp/aat-watchdog.log`
 - Termux notifications on restart events
+
+## Backup
+
+Create compressed backups of your OpenClaw workspace and configuration:
+
+```bash
+# Essential backup (config, credentials, workspace)
+./aat backup
+
+# Full backup (includes session history, memory vectors, media)
+./aat backup --full
+
+# Save to specific location
+./aat backup --output /sdcard/
+
+# Preview what would be backed up
+./aat backup --dry-run
+
+# List existing backups
+./aat backup --list
+
+# JSON output (for scripting)
+./aat backup --json
+```
+
+**What's backed up:**
+
+| Mode | Contents | Typical Size |
+|------|----------|-------------|
+| Essential (default) | Config, credentials, identity, cron jobs, workspace files, crontab | ~400 KB |
+| Full (`--full`) | Everything above + session history, completions, memory vectors, media, logs | ~5-20 MB |
+
+Backups are stored as timestamped `.tar.gz` archives in `~/backups/` by default. The archive uses a clean directory structure (`openclaw-config/`, `workspace/`) for easy browsing.
 
 ## Scheduling
 
