@@ -1,0 +1,59 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Android Agent Toolkit — CLI entrypoint
+# https://github.com/hudsonai221/android-agent-toolkit
+
+set -euo pipefail
+
+AAT_DIR="$(cd "$(dirname "$0")" && pwd)"
+AAT_VERSION="0.1.0"
+
+usage() {
+  cat <<EOF
+Android Agent Toolkit v${AAT_VERSION}
+Operational tooling for OpenClaw on Android.
+
+Usage: aat <command> [options]
+
+Commands:
+  health     Run health checks (gateway, RAM, storage, battery)
+  watchdog   Monitor and auto-restart gateway (not yet implemented)
+  backup     Backup workspace and config (not yet implemented)
+  bench      Benchmark device compatibility (not yet implemented)
+  version    Show version
+
+Options:
+  -h, --help    Show this help
+
+https://github.com/hudsonai221/android-agent-toolkit
+EOF
+}
+
+case "${1:-}" in
+  health)
+    shift
+    exec bash "$AAT_DIR/commands/health.sh" "$@"
+    ;;
+  watchdog)
+    echo "Error: watchdog not yet implemented" >&2
+    exit 1
+    ;;
+  backup)
+    echo "Error: backup not yet implemented" >&2
+    exit 1
+    ;;
+  bench)
+    echo "Error: bench not yet implemented" >&2
+    exit 1
+    ;;
+  version|--version|-v)
+    echo "aat v${AAT_VERSION}"
+    ;;
+  help|--help|-h|"")
+    usage
+    ;;
+  *)
+    echo "Error: unknown command '$1'" >&2
+    echo "Run 'aat help' for usage." >&2
+    exit 1
+    ;;
+esac
