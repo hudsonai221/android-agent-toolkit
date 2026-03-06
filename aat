@@ -18,7 +18,7 @@ Commands:
   health     Run health checks (gateway, RAM, storage, battery)
   watchdog   Monitor and auto-restart gateway (not yet implemented)
   backup     Backup workspace and config (not yet implemented)
-  bench      Benchmark device compatibility (not yet implemented)
+  bench      Benchmark device compatibility and performance
   version    Show version
 
 Options:
@@ -42,8 +42,8 @@ case "${1:-}" in
     exec bash "$AAT_DIR/commands/backup.sh" "$@"
     ;;
   bench)
-    echo "Error: bench not yet implemented" >&2
-    exit 1
+    shift
+    exec bash "$AAT_DIR/commands/bench.sh" "$@"
     ;;
   version|--version|-v)
     echo "aat v${AAT_VERSION}"
