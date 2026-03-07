@@ -11,7 +11,7 @@ Operational tooling for running [OpenClaw](https://github.com/openclaw/openclaw)
 | `aat health` | Check gateway, Telegram, RAM, storage, battery, temperature | ✅ |
 | `aat watchdog` | Auto-restart gateway on crash, alert on failures | ✅ |
 | `aat backup` | One-command workspace + config backup | ✅ |
-| `aat bench` | Device compatibility benchmarker | 🚧 |
+| `aat bench` | Device compatibility benchmarker | ✅ |
 
 ## Requirements
 
@@ -100,6 +100,79 @@ Create compressed backups of your OpenClaw workspace and configuration:
 | Full (`--full`) | Everything above + session history, completions, memory vectors, media, logs | ~5-20 MB |
 
 Backups are stored as timestamped `.tar.gz` archives in `~/backups/` by default. The archive uses a clean directory structure (`openclaw-config/`, `workspace/`) for easy browsing.
+
+## Benchmark
+
+Test your device's compatibility with OpenClaw and identify bottlenecks:
+
+```bash
+# Full benchmark (CPU, memory, disk, Node.js, gateway, network)
+./aat bench
+
+# Quick mode (smaller tests, faster results)
+./aat bench --quick
+
+# JSON output (for tracking over time)
+./aat bench --json
+```
+
+**What's tested:**
+
+| Test | Measures | Weight |
+|------|----------|--------|
+| CPU | SHA256 hash throughput (MB/s) | 25% |
+| Memory | Available RAM vs. thresholds | 25% |
+| Disk I/O | Sequential write/read speed (MB/s) | 15% |
+| Node.js | Cold startup time (ms) | 15% |
+| Gateway RPC | Localhost roundtrip latency (ms) | 10% |
+| Network | HTTPS latency to api.anthropic.com (ms) | 10% |
+
+**Score ranges:**
+
+| Score | Rating | Meaning |
+|-------|--------|---------|
+| 90-100 | Excellent | Runs OpenClaw smoothly |
+| 70-89 | Good | Handles most workloads |
+| 50-69 | Adequate | May struggle under heavy load |
+| 30-49 | Marginal | Expect slowdowns and memory pressure |
+| 0-29 | Poor | Likely to crash or timeout frequently |
+
+If the gateway isn't running, it's excluded from scoring and the remaining weights are redistributed. Below 70, you'll get specific recommendations (e.g., "close other apps" for low RAM).
+
+**Example output (Pixel 2 XL, `--quick`):**
+
+```
+Android Agent Toolkit — Device Benchmark
+
+Device: Qualcomm Technologies, Inc MSM8998 | 8 cores | aarch64
+
+CPU
+  ✓ SHA256 throughput: 181 MB/s (8 MB in 44 ms)
+     Score: 95/100
+
+Memory
+  ✓ Available: 1281 MB / 3662 MB total
+     Score: 81/100
+
+Disk I/O
+  ⚠ Write: 82 MB/s | Read: 410 MB/s (16 MB test)
+     Score: 43/100
+
+Node.js
+  ✓ Startup: 87 ms (v22.22.0)
+     Score: 100/100
+
+Gateway RPC
+  ✓ Latency: 41 ms (port 18789)
+     Score: 83/100
+
+Network
+  ✓ API latency: 264 ms (api.anthropic.com)
+     Score: 95/100
+
+═══════════════════════════════════════
+✓ Overall: 83/100 — Good
+```
 
 ## Scheduling
 
