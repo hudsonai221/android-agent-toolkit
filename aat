@@ -5,7 +5,7 @@
 set -euo pipefail
 
 AAT_DIR="$(cd "$(dirname "$0")" && pwd)"
-AAT_VERSION="0.1.0"
+AAT_VERSION="0.2.0"
 
 usage() {
   cat <<EOF
@@ -15,9 +15,11 @@ Operational tooling for OpenClaw on Android.
 Usage: aat <command> [options]
 
 Commands:
+  status     Combined system dashboard (gateway, watchdog, backups, resources)
+  logs       Unified log viewer (gateway, watchdog, cron)
   health     Run health checks (gateway, RAM, storage, battery)
-  watchdog   Monitor and auto-restart gateway (not yet implemented)
-  backup     Backup workspace and config (not yet implemented)
+  watchdog   Monitor and auto-restart gateway
+  backup     Backup workspace and config
   bench      Benchmark device compatibility and performance
   version    Show version
 
@@ -29,6 +31,14 @@ EOF
 }
 
 case "${1:-}" in
+  status)
+    shift
+    exec bash "$AAT_DIR/commands/status.sh" "$@"
+    ;;
+  logs)
+    shift
+    exec bash "$AAT_DIR/commands/logs.sh" "$@"
+    ;;
   health)
     shift
     exec bash "$AAT_DIR/commands/health.sh" "$@"

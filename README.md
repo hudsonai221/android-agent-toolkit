@@ -8,7 +8,9 @@ Operational tooling for running [OpenClaw](https://github.com/openclaw/openclaw)
 
 | Tool | Description | Status |
 |------|-------------|--------|
-| `aat health` | Check gateway, Telegram, RAM, storage, battery, temperature | ✅ |
+| `aat status` | Combined system dashboard — gateway, watchdog, backups, resources | ✅ |
+| `aat logs` | Unified log viewer — gateway, watchdog, cron runs | ✅ |
+| `aat health` | Detailed health checks — gateway, RAM, storage, battery, temperature | ✅ |
 | `aat watchdog` | Auto-restart gateway on crash, alert on failures | ✅ |
 | `aat backup` | One-command workspace + config backup | ✅ |
 | `aat bench` | Device compatibility benchmarker | ✅ |
@@ -32,15 +34,67 @@ echo 'export PATH="$HOME/dev/android-agent-toolkit:$PATH"' >> ~/.bashrc
 ## Usage
 
 ```bash
+# System dashboard (one command to check everything)
+./aat status
+
+# One-line summary
+./aat status --brief
+
+# View recent logs from all sources
+./aat logs
+
 # Full health check
 ./aat health
 
 # JSON output (for scripting/cron)
 ./aat health --json
-
-# Quick status (one-line summary)
-./aat health --brief
 ```
+
+## Status
+
+Single-glance dashboard combining gateway state, watchdog health, backup status, and system resources:
+
+```bash
+# Full dashboard
+./aat status
+
+# One-line summary (great for scripts)
+./aat status --brief
+# → ✓ ok | gw:up rpc:ok | wd:cron | bk:2d ago | ram:69% disk:19% bat:100% | load:4.0 up:4d
+
+# JSON output
+./aat status --json
+```
+
+Shows: gateway process + RPC status + uptime, watchdog state (daemon/cron/off), last backup age, RAM/swap/disk usage, battery level + temperature, system load + uptime. Color-coded with ✓/⚠/✗ indicators.
+
+## Logs
+
+Unified log viewer across gateway, watchdog, and cron job runs:
+
+```bash
+# Last 50 lines from all sources
+./aat logs
+
+# Specific source
+./aat logs watchdog
+./aat logs gateway
+./aat logs cron
+
+# Control output
+./aat logs -n 100              # More lines
+./aat logs --grep "restart"    # Search across logs
+./aat logs --since 1h          # Entries from last hour
+./aat logs watchdog -f         # Follow watchdog log in real-time
+
+# Raw/JSON output
+./aat logs --raw
+```
+
+Sources:
+- **gateway** — OpenClaw command log (session creates, resets)
+- **watchdog** — AAT watchdog activity (health checks, restarts)
+- **cron** — OpenClaw cron job runs with job names and status
 
 ## Watchdog
 
