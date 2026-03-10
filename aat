@@ -5,7 +5,7 @@
 set -euo pipefail
 
 AAT_DIR="$(cd "$(dirname "$0")" && pwd)"
-AAT_VERSION="0.3.0"
+AAT_VERSION="0.4.0"
 
 usage() {
   cat <<EOF
@@ -21,6 +21,7 @@ Commands:
   health     Run health checks (gateway, RAM, storage, battery)
   watchdog   Monitor and auto-restart gateway
   backup     Backup workspace and config
+  restore    Restore from a backup archive
   bench      Benchmark device compatibility and performance
   version    Show version
 
@@ -55,6 +56,10 @@ case "${1:-}" in
   backup)
     shift
     exec bash "$AAT_DIR/commands/backup.sh" "$@"
+    ;;
+  restore)
+    shift
+    exec bash "$AAT_DIR/commands/restore.sh" "$@"
     ;;
   bench)
     shift

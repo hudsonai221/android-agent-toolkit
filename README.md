@@ -14,6 +14,7 @@ Operational tooling for running [OpenClaw](https://github.com/openclaw/openclaw)
 | `aat health` | Detailed health checks — gateway, RAM, storage, battery, temperature | ✅ |
 | `aat watchdog` | Auto-restart gateway on crash, alert on failures | ✅ |
 | `aat backup` | One-command workspace + config backup | ✅ |
+| `aat restore` | Restore from a backup archive | ✅ |
 | `aat bench` | Device compatibility benchmarker | ✅ |
 
 ## Requirements
@@ -189,6 +190,52 @@ Create compressed backups of your OpenClaw workspace and configuration:
 | Full (`--full`) | Everything above + session history, completions, memory vectors, media, logs | ~5-20 MB |
 
 Backups are stored as timestamped `.tar.gz` archives in `~/backups/` by default. The archive uses a clean directory structure (`openclaw-config/`, `workspace/`) for easy browsing.
+
+## Restore
+
+Restore files from a backup created by `aat backup`:
+
+```bash
+# Restore from a specific archive
+./aat restore ~/backups/aat-backup-20260310-120000.tar.gz
+
+# Use the most recent backup automatically
+./aat restore --latest
+
+# Inspect archive contents before restoring
+./aat restore --latest --list
+
+# Preview what would happen (no changes made)
+./aat restore --latest --dry-run
+
+# Selective restore
+./aat restore --latest --config-only      # Only ~/.openclaw/ files
+./aat restore --latest --workspace-only   # Only ~/clawd/ files
+./aat restore --latest --skip-crontab     # Everything except crontab
+
+# Non-interactive (for scripts)
+./aat restore --latest --force --json
+```
+
+**What it does:**
+
+1. Validates the archive integrity
+2. Maps archive paths back to their original locations (`openclaw-config/` → `~/.openclaw/`, `workspace/` → `~/clawd/`)
+3. Shows a conflict report (new vs. existing files)
+4. Extracts to a staging directory first, then copies to final destinations (safe — no partial restores on failure)
+5. Optionally restores the crontab
+
+**Scope options:**
+
+| Flag | Restores |
+|------|----------|
+| *(default)* | Everything: config + workspace + crontab |
+| `--config-only` | Only `~/.openclaw/` files |
+| `--workspace-only` | Only `~/clawd/` files |
+| `--crontab-only` | Only the system crontab |
+| `--skip-crontab` | Everything except crontab |
+
+> 💡 **Tip:** After restoring config files, restart the gateway: `openclaw gateway restart`
 
 ## Benchmark
 
