@@ -10,6 +10,7 @@ Operational tooling for running [OpenClaw](https://github.com/openclaw/openclaw)
 |------|-------------|--------|
 | `aat status` | Combined system dashboard — gateway, watchdog, backups, resources | ✅ |
 | `aat logs` | Unified log viewer — gateway, watchdog, cron runs | ✅ |
+| `aat update` | Safe OpenClaw updater — backup, update, verify, rollback | ✅ |
 | `aat health` | Detailed health checks — gateway, RAM, storage, battery, temperature | ✅ |
 | `aat watchdog` | Auto-restart gateway on crash, alert on failures | ✅ |
 | `aat backup` | One-command workspace + config backup | ✅ |
@@ -95,6 +96,40 @@ Sources:
 - **gateway** — OpenClaw command log (session creates, resets)
 - **watchdog** — AAT watchdog activity (health checks, restarts)
 - **cron** — OpenClaw cron job runs with job names and status
+
+## Update
+
+Safely update OpenClaw with automatic backup and gateway verification:
+
+```bash
+# Check if an update is available
+./aat update --check
+
+# Full safe update (backup → stop → update → verify → restart)
+./aat update
+
+# Force re-run even if already on latest
+./aat update --force
+
+# Skip the pre-update backup (faster)
+./aat update --skip-backup
+
+# JSON output (for scripting)
+./aat update --check --json
+```
+
+**What it does:**
+
+1. Checks npm registry for a newer OpenClaw version
+2. Creates an essential backup via `aat backup` (unless `--skip-backup`)
+3. Stops the gateway cleanly
+4. Runs the `openclaw-android` platform updater (handles patches, sharp rebuild, etc.)
+5. Restarts the gateway and waits for RPC to respond (up to 60s)
+6. Reports results with rollback instructions if anything failed
+
+**Requirements:** [openclaw-android](https://github.com/AidanPark/openclaw-android) installer (`~/.openclaw-android/`)
+
+> ⚠️ **Never use `npm update` directly** — it can break the gateway. Always use `aat update` or the openclaw-android installer.
 
 ## Watchdog
 

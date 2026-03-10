@@ -5,7 +5,7 @@
 set -euo pipefail
 
 AAT_DIR="$(cd "$(dirname "$0")" && pwd)"
-AAT_VERSION="0.2.0"
+AAT_VERSION="0.3.0"
 
 usage() {
   cat <<EOF
@@ -17,6 +17,7 @@ Usage: aat <command> [options]
 Commands:
   status     Combined system dashboard (gateway, watchdog, backups, resources)
   logs       Unified log viewer (gateway, watchdog, cron)
+  update     Safe OpenClaw update (backup → update → verify)
   health     Run health checks (gateway, RAM, storage, battery)
   watchdog   Monitor and auto-restart gateway
   backup     Backup workspace and config
@@ -38,6 +39,10 @@ case "${1:-}" in
   logs)
     shift
     exec bash "$AAT_DIR/commands/logs.sh" "$@"
+    ;;
+  update)
+    shift
+    exec bash "$AAT_DIR/commands/update.sh" "$@"
     ;;
   health)
     shift
