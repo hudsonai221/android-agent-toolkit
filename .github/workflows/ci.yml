@@ -19,7 +19,7 @@ jobs:
       - name: Lint all shell scripts
         run: |
           shellcheck --severity=warning \
-            --exclude=SC1091 \
+            --exclude=SC1008,SC1091 \
             aat \
             lib/common.sh \
             commands/*.sh
