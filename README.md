@@ -1,5 +1,7 @@
 # Android Agent Toolkit
 
+[![CI](https://github.com/hudsonai221/android-agent-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/hudsonai221/android-agent-toolkit/actions/workflows/ci.yml)
+
 Operational tooling for running [OpenClaw](https://github.com/openclaw/openclaw) reliably on Android (Termux).
 
 **Not another setup guide.** This is what you need *after* installation — monitoring, auto-recovery, backup, and benchmarking for long-term agent hosting on a phone.
@@ -25,13 +27,23 @@ Operational tooling for running [OpenClaw](https://github.com/openclaw/openclaw)
 
 ## Installation
 
+**Quick install (one command):**
+
+```bash
+curl -sL https://raw.githubusercontent.com/hudsonai221/android-agent-toolkit/main/install.sh | bash
+```
+
+**Or manual:**
+
 ```bash
 git clone https://github.com/hudsonai221/android-agent-toolkit.git
 cd android-agent-toolkit
 chmod +x aat
-# Optionally add to PATH:
-echo 'export PATH="$HOME/dev/android-agent-toolkit:$PATH"' >> ~/.bashrc
+# Add to PATH:
+echo 'export PATH="$HOME/android-agent-toolkit:$PATH"' >> ~/.bashrc
 ```
+
+The install script handles cloning, PATH setup, and runs a verification check. Re-run it to update.
 
 ## Usage
 
